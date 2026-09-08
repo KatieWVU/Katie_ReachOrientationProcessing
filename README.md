@@ -126,7 +126,7 @@ as the production pipeline.
 
 Use FCR as the initial candidate because the exploratory notes document a
 signed horizontal FCR X convention and a signed vertical FCR Z convention.
-Before fixing it for the cohort, score FCR, ECU, and FCU on every included trial
+Before fixing it for the subject, score FCR, ECU, and FCU on every included trial
 for:
 
 - equal axis lengths, finite coverage, and nonconstant samples
