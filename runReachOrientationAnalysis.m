@@ -8,7 +8,7 @@ sPathSource = "G:\Shared drives\LABS-DATASETS\DATASET_REACH_ORIENTATION";
 dbox        = databox();
 dbox.loadMeta(sPathSource);
 %%
-idSubject       = [4];
+idSubject       = [1];
 idSignalEvent   = 57;
 sScript         = 'nData = butterfilt(nData,nRate,6,''nOrder'',2);';
 sTable          = 'accraw';
@@ -21,8 +21,10 @@ idTrialTypeS   = [7,9,11,13]+1; %slow movements
 idTrialTypeH   = [7:10]; %horizontal trial
 idTrialTypeV   = [11:14]; %vertical trial
 
+
+
 % Get the representative signals using selectRepresentativeSensor.m
 
-[hSignal,vSignal] = selectRepresentativeSensor(sPathSource,idSubject,...
+[hSignal,vSignal] = selectRepresentativeSensor(dbox,idSubject,...
     idSignalEvent,sScript,sTable,sSignalList,sSignalListFCU,...
-    sSignalListFCR,sTrialTypeList)
+    sSignalListFCR,sTrialTypeList);
