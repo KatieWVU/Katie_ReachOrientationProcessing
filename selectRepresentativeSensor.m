@@ -4,12 +4,9 @@
 % Scores FCR, FCU, and ECU for signal to noise ratio, cadence peak, and
 % compatibility with nBeat
 
-function [hSignal,vSignal] = selectRepresentativeSensor(sPathSourceIn,idSubjectIn,idSignalEventIn,sScriptIn,sTableIn,sSignalListIn,sSignalListFCUIn,sSignalListFCRIn,sTrialTypeListIn)
-%% load database
-sPathSource = sPathSourceIn; %"G:\Shared drives\LABS-DATASETS\DATASET_REACH_ORIENTATION";
-dbox        = databox();
-dbox.loadMeta(sPathSource);
-%%
+function [hSignal,vSignal] = selectRepresentativeSensor(dboxIn,idSubjectIn,idSignalEventIn,sScriptIn,sTableIn,sSignalListIn,sSignalListFCUIn,sSignalListFCRIn,sTrialTypeListIn)
+
+dbox        = dboxIn;
 
 % initialize score values to zero
 % scores will be used to determine which signal is best for each subject
