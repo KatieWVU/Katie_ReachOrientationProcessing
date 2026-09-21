@@ -4,7 +4,7 @@
 % Scores FCR, FCU, and ECU for signal to noise ratio, cadence peak, and
 % compatibility with nBeat
 
-function [hSignal,vSignal] = selectRepresentativeSensor(dboxIn,idSubjectIn,idSignalEventIn,sScriptIn,sTableIn,sSignalListIn,sSignalListFCUIn,sSignalListFCRIn,sTrialTypeListIn)
+function [hSignal,vSignal,shSignal,svSignal] = selectRepresentativeSensor(dboxIn,idSubjectIn,idSignalEventIn,sScriptIn,sTableIn,sSignalListIn,sSignalListFCUIn,sSignalListFCRIn,sTrialTypeListIn)
 
 dbox        = dboxIn;
 
@@ -67,6 +67,8 @@ cadFCRz = 0;
 % initialize the variables to hold the selected signal choices
 hSignal = 0;
 vSignal = 0;
+shSignal = '';
+svSignal = '';
 
 
 % pull trial data (this is given as input to the function, but I am leaving
@@ -892,7 +894,7 @@ end
 
 
 % print out a table of score values for me to look at
-Signal = ["ECUx";"ECUy";"ECUz";"FCUx";"FCUy";"FCUz";"FCRx";"FCRy";"FCRz"];
+Signal = ["ECU_X";"ECU_Y";"ECU_Z";"FCU_X";"FCU_Y";"FCU_Z";"FCR_X";"FCR_Y";"FCR_Z"];
 Scores = [scoreECUx;scoreECUy;scoreECUz;scoreFCUx;scoreFCUy;scoreFCUz;scoreFCRx;scoreFCRy;scoreFCRz];
 horizontalScores = [hECUx;hECUy;hECUz;hFCUx;hFCUy;hFCUz;hFCRx;hFCRy;hFCRz];
 verticalScores = [vECUx;vECUy;vECUz;vFCUx;vFCUy;vFCUz;vFCRx;vFCRy;vFCRz];
@@ -1091,11 +1093,13 @@ signalVals = [57,58,59,44,45,46,47,48,49];
 for i = 1:length(signalVals)
     if htotals(i) == maxhtotal
         hSignal = signalVals(i);
-        disp(["hSignal: ",Signal(i)]);
+        shSignal = Signal(i);
+        % disp(["hSignal: ",Signal(i)]);
     end
     if vtotals(i) == maxvtotal
         vSignal = signalVals(i);
-        disp(["vSignal: ",Signal(i)]);
+        svSignal = Signal(i);
+        % disp(["vSignal: ",Signal(i)]);
     end
 end
 end
