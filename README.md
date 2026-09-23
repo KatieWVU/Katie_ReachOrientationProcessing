@@ -124,6 +124,7 @@ as the production pipeline.
 
 ### 1. Select and validate the representative sensor
 
+Use the same sensor across subjects per trialType
 Use FCR as the initial candidate because the exploratory notes document a
 signed horizontal FCR X convention and a signed vertical FCR Z convention.
 Before fixing it for the subject, score FCR, ECU, and FCU on every included trial
