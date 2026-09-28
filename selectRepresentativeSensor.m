@@ -9,21 +9,22 @@ function [nSignal,sSignal] = selectRepresentativeSensor(dboxIn,sScriptIn,sTableI
 dbox        = dboxIn;
 
 % initialize score values to zero
-% scores will be used to determine which signal is best for each subject
+% totaled scores will be used to determine which signal is best for each subject
 % and movement type
 
-% these scores reflect snr
-scoreECUx = 0;
-scoreECUy = 0;
-scoreECUz = 0;
+% these scores reflect snr. if there are any NaN values in the signal, that
+% will be reflected here as well
+snrECUx = 0;
+snrECUy = 0;
+snrECUz = 0;
 
-scoreFCUx = 0;
-scoreFCUy = 0;
-scoreFCUz = 0;
+snrFCUx = 0;
+snrFCUy = 0;
+snrFCUz = 0;
 
-scoreFCRx = 0;
-scoreFCRy = 0;
-scoreFCRz = 0;
+snrFCRx = 0;
+snrFCRy = 0;
+snrFCRz = 0;
 
 % initialize scores to 0. These scores reflect which signal shows clearest
 % differences between peaks and valleys for different movement types
@@ -61,7 +62,7 @@ sSignal = '';
 % the way it would be called if not a function in comments at the end of
 % each line)
 idSubject       = [1,4,6:9];
-idSignalEvent   = idSignalEventIn;
+idSignalEvent   = idSignalEventIn; % idSignalEvent   = 57;
 sScript         = sScriptIn; % 'nData = butterfilt(nData,nRate,6,''nOrder'',2);';
 sTable          = sTableIn; % 'accraw';
 sSignalList     = sSignalListIn; % {'ECU_X','ECU_Y','ECU_Z'};
@@ -112,35 +113,35 @@ for sub = idSubject
                 % as an option
                 for i = 1:length(nDataECU)-1
                     if isnan(nDataECU(1,i))
-                        scoreECUx = scoreECUx-1000;
+                        snrECUx = snrECUx-1000;
                     end
                     if isnan(nDataECU(2,i))
-                        scoreECUy = scoreECUy-1000;
+                        snrECUy = snrECUy-1000;
                     end
                     if isnan(nDataECU(3,i))
-                        scoreECUz = scoreECUz-1000;
+                        snrECUz = snrECUz-1000;
                     end
                 end
                 for i = 1:length(nDataFCU)-1
                     if isnan(nDataFCU(1,i))
-                        scoreFCUx = scoreFCUx-1000;
+                        snrFCUx = snrFCUx-1000;
                     end
                     if isnan(nDataFCU(2,i))
-                        scoreFCUy = scoreFCUy-1000;
+                        snrFCUy = snrFCUy-1000;
                     end
                     if isnan(nDataFCU(3,i))
-                        scoreFCUz = scoreFCUz-1000;
+                        snrFCUz = snrFCUz-1000;
                     end
                 end
                 for i = 1:length(nDataFCR)-1
                     if isnan(nDataFCR(1,i))
-                        scoreFCRx = scoreFCRx-1000;
+                        snrFCRx = snrFCRx-1000;
                     end
                     if isnan(nDataFCR(2,i))
-                        scoreFCRy = scoreFCRy-1000;
+                        snrFCRy = snrFCRy-1000;
                     end
                     if isnan(nDataFCR(3,i))
-                        scoreFCRz = scoreFCRz-1000;
+                        snrFCRz = snrFCRz-1000;
                     end
                 end
 
@@ -161,6 +162,7 @@ for sub = idSubject
                 lowPassFCRz = butterfilt(nDataFCR(3,:),nRate,nBeat/60,'nOrder',2,'sType','low');
 
 
+
                 noiseECUx = nDataECU(1,:)-lowPassECUx;
                 noiseECUy = nDataECU(2,:)-lowPassECUy;
                 noiseECUz = nDataECU(3,:)-lowPassECUz;
@@ -176,64 +178,139 @@ for sub = idSubject
 
                 % calculate the signal to noise ratio for each signal
                 % using the matlab function snr()
-                snrECUx = snr(nDataECU(1,:),noiseECUx);
-                snrECUy = snr(nDataECU(2,:),noiseECUy);
-                snrECUz = snr(nDataECU(3,:),noiseECUz);
+                snrECUxVal = snr(nDataECU(1,:),noiseECUx);
+                snrECUyVal = snr(nDataECU(2,:),noiseECUy);
+                snrECUzVal = snr(nDataECU(3,:),noiseECUz);
 
-                snrFCUx = snr(nDataFCU(1,:),noiseFCUx);
-                snrFCUy = snr(nDataFCU(2,:),noiseFCUy);
-                snrFCUz = snr(nDataFCU(3,:),noiseFCUz);
+                snrFCUxVal = snr(nDataFCU(1,:),noiseFCUx);
+                snrFCUyVal = snr(nDataFCU(2,:),noiseFCUy);
+                snrFCUzVal = snr(nDataFCU(3,:),noiseFCUz);
 
-                snrFCRx = snr(nDataFCR(1,:),noiseFCRx);
-                snrFCRy = snr(nDataFCR(2,:),noiseFCRy);
-                snrFCRz = snr(nDataFCR(3,:),noiseFCRz);
+                snrFCRxVal = snr(nDataFCR(1,:),noiseFCRx);
+                snrFCRyVal = snr(nDataFCR(2,:),noiseFCRy);
+                snrFCRzVal = snr(nDataFCR(3,:),noiseFCRz);
+
+
+
+                % % the below are figures for a manual check
+                % x = 1:length(lowPassECUx);
+                % 
+                % figure
+                % subplot(3,1,1)
+                % plot(x,nDataECU(1,:))
+                % hold on
+                % plot(x,lowPassECUx)
+                % plot(x,noiseECUx)
+                % hold off
+                % subplot(3,1,2)
+                % plot(x,nDataECU(2,:))
+                % hold on
+                % plot(x,lowPassECUy)
+                % plot(x,noiseECUy)
+                % hold off
+                % subplot(3,1,3)
+                % plot(x,nDataECU(3,:))
+                % hold on
+                % plot(x,lowPassECUz)
+                % plot(x,noiseECUz)
+                % hold off
+                % sgtitle(['ECU idTrial ', num2str(idTrial)])
+                % 
+                % figure
+                % subplot(3,1,1)
+                % plot(x,nDataFCU(1,:))
+                % hold on
+                % plot(x,lowPassFCUx)
+                % plot(x,noiseFCUx)
+                % hold off
+                % subplot(3,1,2)
+                % plot(x,nDataFCU(2,:))
+                % plot(x,noiseFCUy)
+                % hold on
+                % plot(x,lowPassFCUy)
+                % hold off
+                % subplot(3,1,3)
+                % plot(x,nDataFCU(3,:))
+                % hold on
+                % plot(x,lowPassFCUz)
+                % plot(x,noiseFCUz)
+                % hold off
+                % sgtitle(['FCU idTrial ',num2str(idTrial)])
+                % 
+                % figure
+                % subplot(3,1,1)
+                % plot(x,nDataFCR(1,:))
+                % hold on
+                % plot(x,lowPassFCRx)
+                % plot(x,noiseFCRx)
+                % hold off
+                % subplot(3,1,2)
+                % plot(x,nDataFCR(2,:))
+                % hold on
+                % plot(x,lowPassFCRy)
+                % plot(x,noiseFCRy)
+                % hold off
+                % subplot(3,1,3)
+                % plot(x,nDataFCR(3,:))
+                % hold on
+                % plot(x,lowPassFCRz)
+                % plot(x,noiseFCRz)
+                % hold off
+                % sgtitle(['FCR idTrial ',num2str(idTrial)])
+
+                % the below is a manual check of snr values
+                snrX = {snrECUxVal;snrFCUxVal;snrFCRxVal};
+                snrY = {snrECUyVal;snrFCUyVal;snrFCRyVal};
+                snrZ = {snrECUzVal;snrFCUzVal;snrFCRzVal};
+                axes = {'ECU';'FCU';'FCR'};
+                snrTable = table(axes,snrX,snrY,snrZ);
 
 
                 % get the max and min snr values
-                maxSnr = max([snrECUx,snrECUy,snrECUz,snrFCUx,snrFCUy,snrFCUz,snrFCRx,snrFCRy,snrFCRz]);
-                minSnr = min([snrECUx,snrECUy,snrECUz,snrFCUx,snrFCUy,snrFCUz,snrFCRx,snrFCRy,snrFCRz]);
+                maxSnr = max([snrECUxVal,snrECUyVal,snrECUzVal,snrFCUxVal,snrFCUyVal,snrFCUzVal,snrFCRxVal,snrFCRyVal,snrFCRzVal]);
+                minSnr = min([snrECUxVal,snrECUyVal,snrECUzVal,snrFCUxVal,snrFCUyVal,snrFCUzVal,snrFCRxVal,snrFCRyVal,snrFCRzVal]);
 
                 % assign points according to snr: add one point for the best
                 % snr, lose one point for the worst snr
-                if snrECUx == maxSnr
-                    scoreECUx = scoreECUx+1;
-                elseif snrECUy == maxSnr
-                    scoreECUy = scoreECUy+1;
-                elseif snrECUz == maxSnr
-                    scoreECUz = scoreECUz+1;
-                elseif snrFCUx == maxSnr
-                    scoreFCUx = scoreFCUx+1;
-                elseif snrFCUy == maxSnr
-                    scoreFCUy = scoreFCUy+1;
-                elseif snrFCUz == maxSnr
-                    scoreFCUz = scoreFCUz+1;
-                elseif snrFCRx == maxSnr
-                    scoreFCRx = scoreFCRx+1;
-                elseif snrFCRy == maxSnr
-                    scoreFCRy = scoreFCRy+1;
-                elseif snrFCRz == maxSnr
-                    scoreFCRz = scoreFCRz+1;
+                if snrECUxVal == maxSnr
+                    snrECUx = snrECUx+1;
+                elseif snrECUyVal == maxSnr
+                    snrECUy = snrECUy+1;
+                elseif snrECUzVal == maxSnr
+                    snrECUz = snrECUz+1;
+                elseif snrFCUxVal == maxSnr
+                    snrFCUx = snrFCUx+1;
+                elseif snrFCUyVal == maxSnr
+                    snrFCUy = snrFCUy+1;
+                elseif snrFCUzVal == maxSnr
+                    snrFCUz = snrFCUz+1;
+                elseif snrFCRxVal == maxSnr
+                    snrFCRx = snrFCRx+1;
+                elseif snrFCRyVal == maxSnr
+                    snrFCRy = snrFCRy+1;
+                elseif snrFCRzVal == maxSnr
+                    snrFCRz = snrFCRz+1;
                 end
 
 
-                if snrECUx == minSnr
-                    scoreECUx = scoreECUx-1;
-                elseif snrECUy == minSnr
-                    scoreECUy = scoreECUy-1;
-                elseif snrECUz == minSnr
-                    scoreECUz = scoreECUz-1;
-                elseif snrFCUx == minSnr
-                    scoreFCUx = scoreFCUx-1;
-                elseif snrFCUy == minSnr
-                    scoreFCUy = scoreFCUy-1;
-                elseif snrFCUz == minSnr
-                    scoreFCUz = scoreFCUz-1;
-                elseif snrFCRx == minSnr
-                    scoreFCRx = scoreFCRx-1;
-                elseif snrFCRy == minSnr
-                    scoreFCRy = scoreFCRy-1;
-                elseif snrFCRz == minSnr
-                    scoreFCRz = scoreFCRz-1;
+                if snrECUxVal == minSnr
+                    snrECUx = snrECUx-1;
+                elseif snrECUyVal == minSnr
+                    snrECUy = snrECUy-1;
+                elseif snrECUzVal == minSnr
+                    snrECUz = snrECUz-1;
+                elseif snrFCUxVal == minSnr
+                    snrFCUx = snrFCUx-1;
+                elseif snrFCUyVal == minSnr
+                    snrFCUy = snrFCUy-1;
+                elseif snrFCUzVal == minSnr
+                    snrFCUz = snrFCUz-1;
+                elseif snrFCRxVal == minSnr
+                    snrFCRx = snrFCRx-1;
+                elseif snrFCRyVal == minSnr
+                    snrFCRy = snrFCRy-1;
+                elseif snrFCRzVal == minSnr
+                    snrFCRz = snrFCRz-1;
                 end
 
 
@@ -458,122 +535,122 @@ for sub = idSubject
                 FCRyvalleysi = nonzeros(FCRyvalleysi);
                 FCRzvalleysi = nonzeros(FCRzvalleysi);
 
-                % % get the average peak and valley values
-                % diffECUx = [];
-                % diffECUy = [];
-                % diffECUz = [];
-                % 
-                % diffFCUx = [];
-                % diffFCUy = [];
-                % diffFCUz = [];
-                % 
-                % diffFCRx = [];
-                % diffFCRy = [];
-                % diffFCRz = [];
-                % 
-                % for i = 1:min(length(ECUxpeaks),length(ECUxvalleys))
-                %     diffECUx(i) = ECUxpeaks(i)-ECUxvalleys(i);
-                % end
-                % for i = 1:min(length(ECUypeaks),length(ECUyvalleys))
-                %     diffECUy(i) = ECUypeaks(i)-ECUyvalleys(i);
-                % end
-                % for i = 1:min(length(ECUzpeaks),length(ECUzvalleys))
-                %     diffECUz(i) = ECUzpeaks(i)-ECUzvalleys(i);
-                % end
-                % 
-                % for i = 1:min(length(FCUxpeaks),length(FCUxvalleys))
-                %     diffFCUx(i) = FCUxpeaks(i)-FCUxvalleys(i);
-                % end
-                % for i = 1:min(length(FCUypeaks),length(FCUyvalleys))
-                %     diffFCUy(i) = FCUypeaks(i)-FCUyvalleys(i);
-                % end
-                % for i = 1:min(length(FCUzpeaks),length(FCUzvalleys))
-                %     diffFCUz(i) = FCUzpeaks(i)-FCUzvalleys(i);
-                % end
-                % 
-                % for i = 1:min(length(FCRxpeaks),length(FCRxvalleys))
-                %     diffFCRx(i) = FCRxpeaks(i)-FCRxvalleys(i);
-                % end
-                % for i = 1:min(length(FCRypeaks),length(FCRyvalleys))
-                %     diffFCRy(i) = FCRypeaks(i)-FCRyvalleys(i);
-                % end
-                % for i = 1:min(length(FCRzpeaks),length(FCRzvalleys))
-                %     diffFCRz(i) = FCRzpeaks(i)-FCRzvalleys(i);
-                % end
-                % 
-                % diffECUxAve = abs(mean(diffECUx));
-                % diffECUyAve = abs(mean(diffECUy));
-                % diffECUzAve = abs(mean(diffECUz));
-                % 
-                % diffFCUxAve = abs(mean(diffFCUx));
-                % diffFCUyAve = abs(mean(diffFCUy));
-                % diffFCUzAve = abs(mean(diffFCUz));
-                % 
-                % diffFCRxAve = abs(mean(diffFCRx));
-                % diffFCRyAve = abs(mean(diffFCRy));
-                % diffFCRzAve = abs(mean(diffFCRz));
-                % 
-                % 
-                % % grab the maximum and minimum differences
-                % maxDiff = max([diffECUxAve,diffECUyAve,diffECUzAve,diffFCUxAve,diffFCUyAve, ...
-                %     diffFCUzAve,diffFCRxAve,diffFCRyAve,diffFCRzAve]);
-                % minDiff = min([diffECUxAve,diffECUyAve,diffECUzAve,diffFCUxAve,diffFCUyAve, ...
-                %     diffFCUzAve,diffFCRxAve,diffFCRyAve,diffFCRzAve]);
-                % 
-                % 
-                % % assign points based on max/min differences
-                % % the best options may differ according to horizontal and
-                % % vertical movements, so assignments are divided along those
-                % % lines
-                % % Bigger differences should make analysis easier, so get +1
-                % if maxDiff == diffECUxAve
-                %     heightECUx = heightECUx+1;
-                % elseif minDiff == diffECUxAve
-                %     heightECUx = heightECUx-1;
-                % end
-                % if maxDiff == diffECUyAve
-                %     heightECUy = heightECUy+1;
-                % elseif minDiff == diffECUyAve
-                %     heightECUy = heightECUy-1;
-                % end
-                % if maxDiff == diffECUzAve
-                %     heightECUz = heightECUz+1;
-                % elseif minDiff == diffECUzAve
-                %     heightECUz = heightECUz-1;
-                % end
-                % 
-                % if maxDiff == diffFCUxAve
-                %     heightFCUx = heightFCUx+1;
-                % elseif minDiff == diffFCUxAve
-                %     heightFCUx = heightFCUx-1;
-                % end
-                % if maxDiff == diffFCUyAve
-                %     heightFCUy = heightFCUy+1;
-                % elseif minDiff == diffFCUyAve
-                %     heightFCUy = heightFCUy-1;
-                % end
-                % if maxDiff == diffFCUzAve
-                %     heightFCUz = heightFCUz+1;
-                % elseif minDiff == diffFCUzAve
-                %     heightFCUz = heightFCUz-1;
-                % end
-                % 
-                % if maxDiff == diffFCRxAve
-                %     heightFCRx = heightFCRx+1;
-                % elseif minDiff == diffFCRxAve
-                %     heightFCRx = heightFCRx-1;
-                % end
-                % if maxDiff == diffFCUyAve
-                %     heightFCRy = heightFCRy+1;
-                % elseif minDiff == diffFCRyAve
-                %     heightFCRy = heightFCRy-1;
-                % end
-                % if maxDiff == diffFCRzAve
-                %     heightFCRz = heightFCRz+1;
-                % elseif minDiff == diffFCRzAve
-                %     heightFCRz = heightFCRz-1;
-                % end
-                % 
+                % get the average peak and valley values
+                diffECUx = [];
+                diffECUy = [];
+                diffECUz = [];
+
+                diffFCUx = [];
+                diffFCUy = [];
+                diffFCUz = [];
+
+                diffFCRx = [];
+                diffFCRy = [];
+                diffFCRz = [];
+
+                for i = 1:min(length(ECUxpeaks),length(ECUxvalleys))
+                    diffECUx(i) = ECUxpeaks(i)-ECUxvalleys(i);
+                end
+                for i = 1:min(length(ECUypeaks),length(ECUyvalleys))
+                    diffECUy(i) = ECUypeaks(i)-ECUyvalleys(i);
+                end
+                for i = 1:min(length(ECUzpeaks),length(ECUzvalleys))
+                    diffECUz(i) = ECUzpeaks(i)-ECUzvalleys(i);
+                end
+
+                for i = 1:min(length(FCUxpeaks),length(FCUxvalleys))
+                    diffFCUx(i) = FCUxpeaks(i)-FCUxvalleys(i);
+                end
+                for i = 1:min(length(FCUypeaks),length(FCUyvalleys))
+                    diffFCUy(i) = FCUypeaks(i)-FCUyvalleys(i);
+                end
+                for i = 1:min(length(FCUzpeaks),length(FCUzvalleys))
+                    diffFCUz(i) = FCUzpeaks(i)-FCUzvalleys(i);
+                end
+
+                for i = 1:min(length(FCRxpeaks),length(FCRxvalleys))
+                    diffFCRx(i) = FCRxpeaks(i)-FCRxvalleys(i);
+                end
+                for i = 1:min(length(FCRypeaks),length(FCRyvalleys))
+                    diffFCRy(i) = FCRypeaks(i)-FCRyvalleys(i);
+                end
+                for i = 1:min(length(FCRzpeaks),length(FCRzvalleys))
+                    diffFCRz(i) = FCRzpeaks(i)-FCRzvalleys(i);
+                end
+
+                diffECUxAve = abs(mean(diffECUx));
+                diffECUyAve = abs(mean(diffECUy));
+                diffECUzAve = abs(mean(diffECUz));
+
+                diffFCUxAve = abs(mean(diffFCUx));
+                diffFCUyAve = abs(mean(diffFCUy));
+                diffFCUzAve = abs(mean(diffFCUz));
+
+                diffFCRxAve = abs(mean(diffFCRx));
+                diffFCRyAve = abs(mean(diffFCRy));
+                diffFCRzAve = abs(mean(diffFCRz));
+
+
+                % grab the maximum and minimum differences
+                maxDiff = max([diffECUxAve,diffECUyAve,diffECUzAve,diffFCUxAve,diffFCUyAve, ...
+                    diffFCUzAve,diffFCRxAve,diffFCRyAve,diffFCRzAve]);
+                minDiff = min([diffECUxAve,diffECUyAve,diffECUzAve,diffFCUxAve,diffFCUyAve, ...
+                    diffFCUzAve,diffFCRxAve,diffFCRyAve,diffFCRzAve]);
+
+
+                % assign points based on max/min differences
+                % the best options may differ according to horizontal and
+                % vertical movements, so assignments are divided along those
+                % lines
+                % Bigger differences should make analysis easier, so get +1
+                if maxDiff == diffECUxAve
+                    heightECUx = heightECUx+1;
+                elseif minDiff == diffECUxAve
+                    heightECUx = heightECUx-1;
+                end
+                if maxDiff == diffECUyAve
+                    heightECUy = heightECUy+1;
+                elseif minDiff == diffECUyAve
+                    heightECUy = heightECUy-1;
+                end
+                if maxDiff == diffECUzAve
+                    heightECUz = heightECUz+1;
+                elseif minDiff == diffECUzAve
+                    heightECUz = heightECUz-1;
+                end
+
+                if maxDiff == diffFCUxAve
+                    heightFCUx = heightFCUx+1;
+                elseif minDiff == diffFCUxAve
+                    heightFCUx = heightFCUx-1;
+                end
+                if maxDiff == diffFCUyAve
+                    heightFCUy = heightFCUy+1;
+                elseif minDiff == diffFCUyAve
+                    heightFCUy = heightFCUy-1;
+                end
+                if maxDiff == diffFCUzAve
+                    heightFCUz = heightFCUz+1;
+                elseif minDiff == diffFCUzAve
+                    heightFCUz = heightFCUz-1;
+                end
+
+                if maxDiff == diffFCRxAve
+                    heightFCRx = heightFCRx+1;
+                elseif minDiff == diffFCRxAve
+                    heightFCRx = heightFCRx-1;
+                end
+                if maxDiff == diffFCUyAve
+                    heightFCRy = heightFCRy+1;
+                elseif minDiff == diffFCRyAve
+                    heightFCRy = heightFCRy-1;
+                end
+                if maxDiff == diffFCRzAve
+                    heightFCRz = heightFCRz+1;
+                elseif minDiff == diffFCRzAve
+                    heightFCRz = heightFCRz-1;
+                end
+
 
                 % check that the cadence approximates nBeat
 
@@ -833,25 +910,27 @@ end
 
 % print out a table of score values for me to look at
 Signal = ["ECU_X";"ECU_Y";"ECU_Z";"FCU_X";"FCU_Y";"FCU_Z";"FCR_X";"FCR_Y";"FCR_Z"];
-Scores = [scoreECUx;scoreECUy;scoreECUz;scoreFCUx;scoreFCUy;scoreFCUz;scoreFCRx;scoreFCRy;scoreFCRz];
+Scores = [snrECUx;snrECUy;snrECUz;snrFCUx;snrFCUy;snrFCUz;snrFCRx;snrFCRy;snrFCRz];
 heightScores = [heightECUx;heightECUy;heightECUz;heightFCUx;heightFCUy;heightFCUz;heightFCRx;heightFCRy;heightFCRz];
 CadenceScores = [cadECUx;cadECUy;cadECUz;cadFCUx;cadFCUy;cadFCUz;cadFCRx;cadFCRy;cadFCRz];
 scoreboard = table(Signal,Scores,CadenceScores,heightScores)
 
 
 % total up the scores
+% weighting snr and cadence as equal importance and height as half as
+% important as the other 2
 
-totalECUx = scoreECUx+heightECUx+cadECUx;
-totalECUy = scoreECUy+heightECUy+cadECUy;
-totalECUz = scoreECUz+heightECUz+cadECUz;
+totalECUx = snrECUx+0.5*heightECUx+cadECUx;
+totalECUy = snrECUy+0.5*heightECUy+cadECUy;
+totalECUz = snrECUz+0.5*heightECUz+cadECUz;
 
-totalFCUx = scoreFCUx+heightFCUx+cadFCUx;
-totalFCUy = scoreFCUy+heightFCUy+cadFCUy;
-totalFCUz = scoreFCUz+heightFCUz+cadFCUz;
+totalFCUx = snrFCUx+0.5*heightFCUx+cadFCUx;
+totalFCUy = snrFCUy+0.5*heightFCUy+cadFCUy;
+totalFCUz = snrFCUz+0.5*heightFCUz+cadFCUz;
 
-totalFCRx = scoreFCRx+heightFCRx+cadFCRx;
-totalFCRy = scoreFCRy+heightFCRy+cadFCRy;
-totalFCRz = scoreFCRz+heightFCRz+cadFCRz;
+totalFCRx = snrFCRx+0.5*heightFCRx+cadFCRx;
+totalFCRy = snrFCRy+0.5*heightFCRy+cadFCRy;
+totalFCRz = snrFCRz+0.5*heightFCRz+cadFCRz;
 
 
 % % if any individual score value is negative, remove that signal as an

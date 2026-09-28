@@ -8,7 +8,7 @@ sPathSource = "G:\Shared drives\LABS-DATASETS\DATASET_REACH_ORIENTATION";
 dbox        = databox();
 dbox.loadMeta(sPathSource);
 %%
-idSubject       = [1];
+% idSubject       = [1];
 idSignalEvent   = 57;
 sScript         = 'nData = butterfilt(nData,nRate,6,''nOrder'',2);';
 sTable          = 'accraw';
