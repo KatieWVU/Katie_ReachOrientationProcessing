@@ -2,31 +2,44 @@
 % selected by selectRepresentativeSignal. This will be passed to this
 % function from runReachOrientation Analysis.
 
-clear
-clc
 
-%% load database -- this section will be removed when i convert the script into a function
-sPathSource = "G:\Shared drives\LABS-DATASETS\DATASET_REACH_ORIENTATION";
-dbox        = databox();
-dbox.loadMeta(sPathSource);
-%%
+function [eventsS1,eventsF1,eventsS4,eventsF4,eventsS6,eventsF6,eventsS7,...
+    eventsF7,eventsS8,eventsF8,eventsS9,eventsF9] = detectReachMovements(dboxIn,...
+    idSignalEventIn,sScriptIn,sTableIn,sTrialTypeListIn,idTrialTypeListIn,sSignalIn,nSignalIn)
 
-% uncomment the below when converting to function
-% function [events] = detectReachMovements(dboxIn,...
-% idSignalEventIn,sScriptIn,sTableIn,sTrialTypeListIn,sSignalIn,nSignalIn,sTrialTypeListIn)
-% 
-% dbox        = dboxIn;
+dbox        = dboxIn;
 
 
-idSubject       = [1]; % when it's finished it will run for all subjects, but while i'm writing it i'm doing 1 subject at a time [1,4,6:9];
-idSignalEvent   = 57; % idSignalEventIn;
-sScript         = 'nData = butterfilt(nData,nRate,6,''nOrder'',2);'; %sScriptIn;
-sTable          = 'accraw'; % sTableIn;
-idSignal        = [57]; % nSignalIn;
-sSignal         = {'ECU_X'}; % sSignalIn;
-sTrialTypeList  = {'UP_HF','UP_HS','SIDE_HF','SIDE_HS','SIDE_VF','SIDE_VS','UP_VF','UP_VS'}; % sTrialTypeListIn
+idSubject       = [1,4,6:9]; % when it's finished it will run for all subjects, but while i'm writing it i'm doing 1 subject at a time [1,4,6:9];
+idSignalEvent   = idSignalEventIn;
+sScript         = sScriptIn;
+sTable          = sTableIn;
+idSignal        = nSignalIn;
+sSignal         = sSignalIn;
+sTrialTypeList  = sTrialTypeListIn;
+idTrialTypeList = idTrialTypeListIn;
 
-events = [];
+idTrialTypeS   = [7,9,11,13]+1; %slow movements
+
+
+% create output arrays. 1 array for each speed and each subject
+eventsS1    = [];
+eventsF1    = [];
+
+eventsS4    = [];
+eventsF4    = [];
+
+eventsS6    = [];
+eventsF6    = [];
+
+eventsS7    = [];
+eventsF7    = [];
+
+eventsS8    = [];
+eventsF8    = [];
+
+eventsS9    = [];
+eventsF9    = [];
 
 nRate = dbox.getMeta('metaSignal',{'sTable',sTable,...
     'sSignal',sSignal},'nRate');
@@ -49,8 +62,8 @@ for sub = idSubject
                 x = 0:1:numel(nData)-1;
                 t = x/nRate;
 
-
-                % set up arrays to detect the first burst
+                % pull start and stop moments (approximated and hand
+                % placed)
                 tStart = dbox.getEvent(idTrial,57,'on',1); % basic start/stop times were stored on signal 57
                 nStart = round(tStart*nRate);
                 tStop  = dbox.getEvent(idTrial,57,'off',1); % basic start/stop times were stored on signal 57
@@ -58,7 +71,8 @@ for sub = idSubject
                 dataVals = nData(nStart:nStop);
                 tVals = t(nStart:nStop);
 
-                lowPassData = butterfilt(nData,nRate,nBeat/60,'nOrder',2,'sType','low');
+                lowPassData = butterfilt(nData,nRate,(nBeat/60)*1.5,'nOrder',2,'sType','low');
+
 
                 % get the max and mins of the filtered data
                 bMax = islocalmax(lowPassData);
@@ -79,10 +93,107 @@ for sub = idSubject
                 peaks   = nonzeros(peaks);
                 valleys = nonzeros(valleys);
 
+                for i = 1:numel(peaks)
+                    if peaks(i)<nStart
+                        peaks(i) = 0;
+                    elseif peaks(i) > nStop
+                        peaks(i) = 0;
+                    end
+                end
+
+                for i = 1:numel(valleys)
+                    if valleys(i)<nStart
+                        valleys(i) = 0;
+                    elseif valleys(i) > nStop
+                        valleys(i) = 0;
+                    end
+                end
+
+                peaks   = nonzeros(peaks);
+                valleys = nonzeros(valleys);
+
+                % arrays to hold the indices of ALL peaks and valleys of
+                % the filtered data
+                eventsIndAll = cat(1,peaks, valleys);
+                eventsIndAll = sort(eventsIndAll);
+
+                % go through the indices and keep only those which actually
+                % correspond to an event based on the beat
+
+                beat = round(tBeat*nRate); % beat represents the number of indices between beats (idealized)
+
+                tap = nStart+beat; % the variable tap will denote the 
+                % approximate place where beats should occur based on timing
+
+
+                i = 1;
+                eventsInd = [];
+                while tap < nStop-beat
+                    diff = [];
+                    for j = 1:numel(eventsIndAll)
+                        diff(j) = abs(tap-eventsIndAll(j));
+                    end
+                    [~, ind] = min(diff);
+                    eventsInd(i) = eventsIndAll(ind);
+                    i = i+1;
+                    tap = eventsIndAll(ind)+beat;
+                    if i>200
+                        disp(['Fails Trial ',num2str(idTrial)])
+                        break;
+                    end
+                end
+
+
+                events = eventsInd/nRate;
+
+                figure
+                plot(t,nData,t,lowPassData)
+                hold on
+                plot(events,nData(eventsInd),'o')
+                hold off
+                title(['Events Trial ', num2str(idTrial)])
+
+                if sub == 1
+                    if ismember(idTrialType,idTrialTypeS)
+                        eventsS1 = events;
+                    else
+                        eventsF1 = events;
+                    end
+                elseif sub == 4
+                    if ismember(idTrialType,idTrialTypeS)
+                        eventsS4 = events;
+                    else
+                        eventsF4 = events;
+                    end
+                elseif sub == 6
+                    if ismember(idTrialType,idTrialTypeS)
+                        eventsS6 = events;
+                    else
+                        eventsF6 = events;
+                    end
+                elseif sub == 7
+                    if ismember(idTrialType,idTrialTypeS)
+                        eventsS7 = events;
+                    else
+                        eventsF7 = events;
+                    end
+                elseif sub == 8
+                    if ismember(idTrialType,idTrialTypeS)
+                        eventsS8 = events;
+                    else
+                        eventsF8 = events;
+                    end
+                else
+                    if ismember(idTrialType,idTrialTypeS)
+                        eventsS9 = events;
+                    else
+                        eventsF9 = events;
+                    end
+                end
 
             end
         end
     end
 end
 
-% end
+end

@@ -1,0 +1,153 @@
+% detect reach movements. Do not assign a direction to them. use the signal
+% selected by selectRepresentativeSignal. This will be passed to this
+% function from runReachOrientation Analysis.
+
+
+function [events,eventsInd] = detectReachMovements(dboxIn,idSignalEventIn,sScriptIn,sTableIn,sTrialTypeListIn,idTrialTypeListIn,sSignalIn,nSignalIn)
+
+dbox        = dboxIn;
+
+
+idSubject       = [1,8]; % when it's finished it will run for all subjects, but while i'm writing it i'm doing 1 subject at a time [1,4,6:9];
+idSignalEvent   = idSignalEventIn;
+sScript         = sScriptIn;
+sTable          = sTableIn;
+idSignal        = nSignalIn;
+sSignal         = sSignalIn;
+sTrialTypeList  = sTrialTypeListIn;
+idTrialTypeList = idTrialTypeListIn;
+
+
+% create output arrays. 1 array for each speed and each subject
+eventsS1    = [];
+eventsF1    = [];
+
+eventsS1    = [];
+eventsF1    = [];
+
+eventsS1    = [];
+eventsF1    = [];
+
+eventsS1    = [];
+eventsF1    = [];
+
+eventsS1    = [];
+eventsF1    = [];
+
+eventsS1    = [];
+eventsF1    = [];
+
+nRate = dbox.getMeta('metaSignal',{'sTable',sTable,...
+    'sSignal',sSignal},'nRate');
+
+for sub = idSubject
+    for iTrialType = 1:numel(sTrialTypeList)
+        idTrialList = dbox.getMeta('metaTrial',{'idSubject',sub,...
+            'sTrialType',sTrialTypeList{iTrialType},'bTrial',1},'idTrial'); % read trials for a given subject
+        if ~isempty(idTrialList)
+            for idTrial = idTrialList
+
+                idTrialType = dbox.getMeta('metaTrial',{'idTrial',idTrial},'idTrialType'); % read the movement type
+
+                % Get data using passed selected signal
+                nData      = dbox.getSignal(idSignal,idTrial,'sScript',sScript);
+
+                nBeat = dbox.getMeta('metaTrialType',{'idTrialType',idTrialType},'nBeat');
+                tBeat = 60/nBeat;
+
+                x = 0:1:numel(nData)-1;
+                t = x/nRate;
+
+                % pull start and stop moments (approximated and hand
+                % placed)
+                tStart = dbox.getEvent(idTrial,57,'on',1); % basic start/stop times were stored on signal 57
+                nStart = round(tStart*nRate);
+                tStop  = dbox.getEvent(idTrial,57,'off',1); % basic start/stop times were stored on signal 57
+                nStop  = round(tStop*nRate);
+                dataVals = nData(nStart:nStop);
+                tVals = t(nStart:nStop);
+
+                lowPassData = butterfilt(nData,nRate,nBeat/60,'nOrder',2,'sType','low');
+
+
+                % get the max and mins of the filtered data
+                bMax = islocalmax(lowPassData);
+                bMin = islocalmin(lowPassData);
+
+                peaks   = zeros(length(bMax),1);
+                valleys = zeros(length(bMin),1);
+
+                for i = 1:numel(lowPassData)
+                    if bMax(i)
+                        peaks(i) = i;
+                    end
+                    if bMin(i)
+                        valleys(i) = i;
+                    end
+                end
+
+                peaks   = nonzeros(peaks);
+                valleys = nonzeros(valleys);
+
+                for i = 1:numel(peaks)
+                    if peaks(i)<nStart
+                        peaks(i) = 0;
+                    elseif peaks(i) > nStop
+                        peaks(i) = 0;
+                    end
+                end
+
+                for i = 1:numel(valleys)
+                    if valleys(i)<nStart
+                        valleys(i) = 0;
+                    elseif valleys(i) > nStop
+                        valleys(i) = 0;
+                    end
+                end
+
+                peaks   = nonzeros(peaks);
+                valleys = nonzeros(valleys);
+
+                % arrays to hold the indices of ALL peaks and valleys of
+                % the filtered data
+                eventsIndAll = cat(1,peaks, valleys);
+                eventsIndAll = sort(eventsIndAll);
+
+                % go through the indices and keep only those which actually
+                % correspond to an event based on the beat
+
+                beat = round(tBeat*nRate); % beat represents the number of indices between beats (idealized)
+
+                tap = nStart+beat; % the variable tap will denote the 
+                % approximate place where beats should occur based on timing
+
+
+                i = 1;
+                eventsInd = [];
+                while tap < nStop
+                    diff = [];
+                    for j = 1:numel(eventsIndAll)
+                        diff(j) = abs(tap-eventsIndAll(j));
+                    end
+                    [~, ind] = min(diff);
+                    eventsInd(i) = eventsIndAll(ind);
+                    i = i+1;
+                    tap = eventsIndAll(ind)+beat;
+                    disp(num2str(i))
+                end
+
+
+                events = eventsInd/nRate;
+
+                figure
+                plot(t,nData)
+                hold on
+                plot(events,nData(eventsInd),'o')
+                hold off
+
+            end
+        end
+    end
+end
+
+end
