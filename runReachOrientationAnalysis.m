@@ -8,7 +8,7 @@ sPathSource = "G:\Shared drives\LABS-DATASETS\DATASET_REACH_ORIENTATION";
 dbox        = databox();
 dbox.loadMeta(sPathSource);
 %%  Define Input variables
-idSubject       = [1];
+idSubject       = [1,4,6:9];
 idSignalEvent   = 57;
 sScript         = 'nData = butterfilt(nData,nRate,6,''nOrder'',2);';
 sTable          = 'accraw';
@@ -53,6 +53,7 @@ idTrialTypeUpH   = [7,8];
     sideVEventsF6,sideVEventsS7,sideVEventsF7,sideVEventsS8,sideVEventsF8,...
     sideVEventsS9,sideVEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
     sTable,sTrialTypeListSideV,idTrialTypeSideV,sSignalSideV,nSignalSideV);
+
 
 
 % [meanS1,stdS1] = getEventDuration(sideVEventsS1);
@@ -173,3 +174,9 @@ nSignalUpH = 49;
 % stdsFast = [stdF1,stdF4,stdF6,stdF7,stdF8,stdF9];
 % 
 % FastValuesUpV = table(averagesFast',stdsFast')
+
+%%
+
+% for sideways vertical trials
+
+b1S = assignTempEvents(dbox,nSignalSideV,sideVEventsF1,5);

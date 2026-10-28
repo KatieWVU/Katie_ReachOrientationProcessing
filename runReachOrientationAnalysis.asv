@@ -8,7 +8,7 @@ sPathSource = "G:\Shared drives\LABS-DATASETS\DATASET_REACH_ORIENTATION";
 dbox        = databox();
 dbox.loadMeta(sPathSource);
 %%  Define Input variables
-idSubject       = [1];
+idSubject       = [1,4,6:9];
 idSignalEvent   = 57;
 sScript         = 'nData = butterfilt(nData,nRate,6,''nOrder'',2);';
 sTable          = 'accraw';
@@ -112,17 +112,93 @@ nSignalSideH = 48;
 % 
 % FastValuesSideH = table(averagesFast',stdsFast')
 
-% % upright vertical trials
-% [upVEventsS1,upVEventsF1,upVEventsS4,upVEventsF4,upVEventsS6,upVEventsF6,...
-%     upVEventsS7,upVEventsF7,upVEventsS8,upVEventsF8,upVEventsS9,...
-%     upVEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
-%     sTable,sTrialTypeListUpV,idTrialTypeUpV,sSignalUpV,nSignalUpV);
-% 
+% upright vertical trials
+[upVEventsS1,upVEventsF1,upVEventsS4,upVEventsF4,upVEventsS6,upVEventsF6,...
+    upVEventsS7,upVEventsF7,upVEventsS8,upVEventsF8,upVEventsS9,...
+    upVEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
+    sTable,sTrialTypeListUpV,idTrialTypeUpV,sSignalUpV,nSignalUpV);
 
-% % upright horizontal trials
-% sSignalUpH = "FCR_Z";
-% nSignalUpH = 49;
-% [upHEventsS1,upHEventsF1,upHEventsS4,upHEventsF4,upHEventsS6,upHEventsF6,...
-%     upHEventsS7,upHEventsF7,upHEventsS8,upHEventsF8,upHEventsS9,...
-%     upHEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
-%     sTable,sTrialTypeListUpH,idTrialTypeUpH,sSignalUpH,nSignalUpH);
+% [meanS1,stdS1] = getEventDuration(upVEventsS1);
+% [meanS4,stdS4] = getEventDuration(upVEventsS4);
+% [meanS6,stdS6] = getEventDuration(upVEventsS6);
+% [meanS7,stdS7] = getEventDuration(upVEventsS7);
+% [meanS8,stdS8] = getEventDuration(upVEventsS8);
+% [meanS9,stdS9] = getEventDuration(upVEventsS9);
+% 
+% averagesSlow = [meanS1,meanS4,meanS6,meanS7,meanS8,meanS9];
+% stdsSlow = [stdS1,stdS4,stdS6,stdS7,stdS8,stdS9];
+% 
+% SlowValuesUpV = table(averagesSlow',stdsSlow')
+% 
+% [meanF1,stdF1] = getEventDuration(upVEventsF1);
+% [meanF4,stdF4] = getEventDuration(upVEventsF4);
+% [meanF6,stdF6] = getEventDuration(upVEventsF6);
+% [meanF7,stdF7] = getEventDuration(upVEventsF7);
+% [meanF8,stdF8] = getEventDuration(upVEventsF8);
+% [meanF9,stdF9] = getEventDuration(upVEventsF9);
+% 
+% averagesFast = [meanF1,meanF4,meanF6,meanF7,meanF8,meanF9];
+% stdsFast = [stdF1,stdF4,stdF6,stdF7,stdF8,stdF9];
+% 
+% FastValuesUpV = table(averagesFast',stdsFast')
+
+% upright horizontal trials
+sSignalUpH = "FCR_Z";
+nSignalUpH = 49;
+[upHEventsS1,upHEventsF1,upHEventsS4,upHEventsF4,upHEventsS6,upHEventsF6,...
+    upHEventsS7,upHEventsF7,upHEventsS8,upHEventsF8,upHEventsS9,...
+    upHEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
+    sTable,sTrialTypeListUpH,idTrialTypeUpH,sSignalUpH,nSignalUpH);
+
+% [meanS1,stdS1] = getEventDuration(upHEventsS1);
+% [meanS4,stdS4] = getEventDuration(upHEventsS4);
+% [meanS6,stdS6] = getEventDuration(upHEventsS6);
+% [meanS7,stdS7] = getEventDuration(upHEventsS7);
+% [meanS8,stdS8] = getEventDuration(upHEventsS8);
+% [meanS9,stdS9] = getEventDuration(upHEventsS9);
+% 
+% averagesSlow = [meanS1,meanS4,meanS6,meanS7,meanS8,meanS9];
+% stdsSlow = [stdS1,stdS4,stdS6,stdS7,stdS8,stdS9];
+% 
+% SlowValuesUpH = table(averagesSlow',stdsSlow')
+% 
+% [meanF1,stdF1] = getEventDuration(upHEventsF1);
+% [meanF4,stdF4] = getEventDuration(upHEventsF4);
+% [meanF6,stdF6] = getEventDuration(upHEventsF6);
+% [meanF7,stdF7] = getEventDuration(upHEventsF7);
+% [meanF8,stdF8] = getEventDuration(upHEventsF8);
+% [meanF9,stdF9] = getEventDuration(upHEventsF9);
+% 
+% averagesFast = [meanF1,meanF4,meanF6,meanF7,meanF8,meanF9];
+% stdsFast = [stdF1,stdF4,stdF6,stdF7,stdF8,stdF9];
+% 
+% FastValuesUpV = table(averagesFast',stdsFast')
+
+%%
+
+% for sideways vertical trials
+
+for sub = idSubject
+for iTrialType = 1:numel(sTrialTypeListSideV)
+    idTrialList = dbox.getMeta('metaTrial',{'idSubject',sub,...
+        'sTrialType',sTrialTypeList{iTrialType},'bTrial',1},'idTrial'); % read trials for a given subject
+    if ~isempty(idTrialList)
+        for idTrial = idTrialList
+            idTrialType = dbox.getMeta('metaTrial',{'idTrial',idTrial},'idTrialType'); % read the movement type
+
+
+            tUp = dbox.getEvent(idTrial,idSignalEvent,'peak',[]);
+            tDown  = dbox.getEvent(idTrial,idSignalEvent,'on',[]);
+
+            % dbox.modEvent({'idTrial',idTrial,'idSignal',idSignalEvent},'bEvent',0);
+            dbox.setEvent(tUp,idTrial,toIdSignalEvent,1,'bEvent',0);
+            dbox.setEvent(tDown,idTrial,toIdSignalEvent,2,'bEvent',0);
+
+
+            display(['Finished idTrial ',num2str(idTrial)])
+
+
+        end
+    end
+end
+end
