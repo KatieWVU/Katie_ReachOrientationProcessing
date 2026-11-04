@@ -2,15 +2,19 @@
 % in with boxsci monitor trial and monitor session to make sure no events
 % were missed before assigning direction.
 
-function [bDone] = assignTempEvents(dboxIn, idSignalIn, eventsIn, idTrialIn)
+function assignTempEvents(dboxIn, idSignalIn, eventsIn, idTrialIn)
 
 dbox = dboxIn;
 idSignal = idSignalIn;
 events = eventsIn;
 idTrial = idTrialIn;
-bDone = 0;
 
-dbox.setEvent(events,idTrial,idSignal,5) % store events under the 'special' event type for now
+for i = 1:numel(events)
+    if mod(i,2) == 0
+        dbox.setEvent(events(i),idTrial,idSignal,3,'bEvent',1); % store alternating events
+    else
+        dbox.setEvent(events(i),idTrial,idSignal,1,'bEvent',1);
+    end
+end
 
-bDone = 1;
 end

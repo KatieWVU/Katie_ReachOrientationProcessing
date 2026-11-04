@@ -55,32 +55,6 @@ idTrialTypeUpH   = [7,8];
     sTable,sTrialTypeListSideV,idTrialTypeSideV,sSignalSideV,nSignalSideV);
 
 
-
-% [meanS1,stdS1] = getEventDuration(sideVEventsS1);
-% [meanS4,stdS4] = getEventDuration(sideVEventsS4);
-% [meanS6,stdS6] = getEventDuration(sideVEventsS6);
-% [meanS7,stdS7] = getEventDuration(sideVEventsS7);
-% [meanS8,stdS8] = getEventDuration(sideVEventsS8);
-% [meanS9,stdS9] = getEventDuration(sideVEventsS9);
-% 
-% averagesSlow = [meanS1,meanS4,meanS6,meanS7,meanS8,meanS9];
-% stdsSlow = [stdS1,stdS4,stdS6,stdS7,stdS8,stdS9];
-% 
-% SlowValuesSideV = table(averagesSlow',stdsSlow')
-% 
-% [meanF1,stdF1] = getEventDuration(sideVEventsF1);
-% [meanF4,stdF4] = getEventDuration(sideVEventsF4);
-% [meanF6,stdF6] = getEventDuration(sideVEventsF6);
-% [meanF7,stdF7] = getEventDuration(sideVEventsF7);
-% [meanF8,stdF8] = getEventDuration(sideVEventsF8);
-% [meanF9,stdF9] = getEventDuration(sideVEventsF9);
-% 
-% averagesFast = [meanF1,meanF4,meanF6,meanF7,meanF8,meanF9];
-% stdsFast = [stdF1,stdF4,stdF6,stdF7,stdF8,stdF9];
-% 
-% FastValuesSideV = table(averagesFast',stdsFast')
-
-
 % sideways horizontal trials
 sSignalSideH = "FCR_Y";
 nSignalSideH = 48;
@@ -89,29 +63,6 @@ nSignalSideH = 48;
     sideHEventsS9,sideHEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
     sTable,sTrialTypeListSideH,idTrialTypeSideH,sSignalSideH,nSignalSideH);
 
-% [meanS1,stdS1] = getEventDuration(sideHEventsS1);
-% [meanS4,stdS4] = getEventDuration(sideHEventsS4);
-% [meanS6,stdS6] = getEventDuration(sideHEventsS6);
-% [meanS7,stdS7] = getEventDuration(sideHEventsS7);
-% [meanS8,stdS8] = getEventDuration(sideHEventsS8);
-% [meanS9,stdS9] = getEventDuration(sideHEventsS9);
-% 
-% averagesSlow = [meanS1,meanS4,meanS6,meanS7,meanS8,meanS9];
-% stdsSlow = [stdS1,stdS4,stdS6,stdS7,stdS8,stdS9];
-% 
-% SlowValuesSideH = table(averagesSlow',stdsSlow')
-% 
-% [meanF1,stdF1] = getEventDuration(sideHEventsF1);
-% [meanF4,stdF4] = getEventDuration(sideHEventsF4);
-% [meanF6,stdF6] = getEventDuration(sideHEventsF6);
-% [meanF7,stdF7] = getEventDuration(sideHEventsF7);
-% [meanF8,stdF8] = getEventDuration(sideHEventsF8);
-% [meanF9,stdF9] = getEventDuration(sideHEventsF9);
-% 
-% averagesFast = [meanF1,meanF4,meanF6,meanF7,meanF8,meanF9];
-% stdsFast = [stdF1,stdF4,stdF6,stdF7,stdF8,stdF9];
-% 
-% FastValuesSideH = table(averagesFast',stdsFast')
 
 % upright vertical trials
 [upVEventsS1,upVEventsF1,upVEventsS4,upVEventsF4,upVEventsS6,upVEventsF6,...
@@ -119,37 +70,19 @@ nSignalSideH = 48;
     upVEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
     sTable,sTrialTypeListUpV,idTrialTypeUpV,sSignalUpV,nSignalUpV);
 
-% [meanS1,stdS1] = getEventDuration(upVEventsS1);
-% [meanS4,stdS4] = getEventDuration(upVEventsS4);
-% [meanS6,stdS6] = getEventDuration(upVEventsS6);
-% [meanS7,stdS7] = getEventDuration(upVEventsS7);
-% [meanS8,stdS8] = getEventDuration(upVEventsS8);
-% [meanS9,stdS9] = getEventDuration(upVEventsS9);
-% 
-% averagesSlow = [meanS1,meanS4,meanS6,meanS7,meanS8,meanS9];
-% stdsSlow = [stdS1,stdS4,stdS6,stdS7,stdS8,stdS9];
-% 
-% SlowValuesUpV = table(averagesSlow',stdsSlow')
-% 
-% [meanF1,stdF1] = getEventDuration(upVEventsF1);
-% [meanF4,stdF4] = getEventDuration(upVEventsF4);
-% [meanF6,stdF6] = getEventDuration(upVEventsF6);
-% [meanF7,stdF7] = getEventDuration(upVEventsF7);
-% [meanF8,stdF8] = getEventDuration(upVEventsF8);
-% [meanF9,stdF9] = getEventDuration(upVEventsF9);
-% 
-% averagesFast = [meanF1,meanF4,meanF6,meanF7,meanF8,meanF9];
-% stdsFast = [stdF1,stdF4,stdF6,stdF7,stdF8,stdF9];
-% 
-% FastValuesUpV = table(averagesFast',stdsFast')
 
 % upright horizontal trials
-sSignalUpH = "FCR_Z";
-nSignalUpH = 49;
+sSignalUpH = "ECU_X";
+nSignalUpH = 57;
 [upHEventsS1,upHEventsF1,upHEventsS4,upHEventsF4,upHEventsS6,upHEventsF6,...
     upHEventsS7,upHEventsF7,upHEventsS8,upHEventsF8,upHEventsS9,...
     upHEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
     sTable,sTrialTypeListUpH,idTrialTypeUpH,sSignalUpH,nSignalUpH);
+
+
+
+% the below is a function check for appropriate times of events (ie, check
+% that the movements last approximately as long as the should)
 
 % [meanS1,stdS1] = getEventDuration(upHEventsS1);
 % [meanS4,stdS4] = getEventDuration(upHEventsS4);
@@ -176,7 +109,34 @@ nSignalUpH = 49;
 % FastValuesUpV = table(averagesFast',stdsFast')
 
 %%
+% commented out assignments have already been done and adjusted. Rerunning
+% will make new events without the manual adjustments.
 
-% for sideways vertical trials
 
-b1S = assignTempEvents(dbox,nSignalSideV,sideVEventsF1,5);
+% sideways vertical trials
+% assignTempEvents(dbox,nSignalSideV,sideVEventsF1,5);
+
+
+% Sideways horizontal
+% assignTempEvents(dbox,nSignalSideH,sideHEventsF1,3);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsS1,4);
+
+
+% upright vertical trials
+
+
+% upright horizontal
+% assignTempEvents(dbox,nSignalUpH,upHEventsF1,1);
+% assignTempEvents(dbox,nSignalUpH,upHEventsS1,2);
+
+%%
+
+% check the temporary events to make sure none got skipped. Add any
+% which were skipped.
+
+%%
+
+% if you needed to add events, there will be back to back events of the
+% same type. The following will reorder all events so that they alternate
+% between event type
+
