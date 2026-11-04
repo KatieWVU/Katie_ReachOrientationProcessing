@@ -136,3 +136,10 @@ nSignalUpH = 57;
 
 %%
 
+% if you needed to add events, there will be back to back events of the
+% same type. The following will reorder all events so that they alternate
+% between event type
+
+alternateTempEvents(dbox,nSignalUpH,1)
+alternateTempEvents(dbox,nSignalUpH,2)
+alternateTempEvents(dbox,nSignalUpH,3)

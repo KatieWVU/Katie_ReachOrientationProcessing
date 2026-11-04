@@ -4,9 +4,9 @@ dbox = dboxIn;
 idSignal = idSignalIn;
 idTrial = idTrialIn;
 
-events = dbox.getEvent(idTrial, idSignal,[],[]);
+events = sort(cat(1,dbox.getEvent(idTrial,idSignal,1,[]),dbox.getEvent(idTrial,idSignal,3,[])));
 
-events = sort(events);
+dbox.modEvent({'idTrial',idTrial,'idSignal',idSignal},'bEvent',0);
 
 for i = 1:numel(events)
     if mod(i,2) == 0
@@ -15,6 +15,5 @@ for i = 1:numel(events)
         dbox.setEvent(events(i),idTrial,idSignal,1,'bEvent',1);
     end
 end
-dbox.modEvent({'idTrial',idTrial,'idSignal',idSignal},'bEvent',0);
 
 end

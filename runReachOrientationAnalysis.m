@@ -35,12 +35,16 @@ idTrialTypeUpH   = [7,8];
 
 % signal for sideways vertical movements
 [nSignalSideV,sSignalSideV] = selectRepresentativeSensor(dbox,sScript,sTable,idSignalEvent,sSignalList,sSignalListFCU,sSignalListFCR,sTrialTypeListSideV);
+% this selects 57 and ECU_X
+
 
 % signal for sideways horizontal movements
 [nSignalSideH,sSignalSideH] = selectRepresentativeSensor(dbox,sScript,sTable,idSignalEvent,sSignalList,sSignalListFCU,sSignalListFCR,sTrialTypeListSideH);
 
 % signal for upright vertical movements
 [nSignalUpV,sSignalUpV] = selectRepresentativeSensor(dbox,sScript,sTable,idSignalEvent,sSignalList,sSignalListFCU,sSignalListFCR,sTrialTypeListUpV);
+% this selects 46 and FCU_Z
+
 
 % signal for sideways horizontal movements
 [nSignalUpH,sSignalUpH] = selectRepresentativeSensor(dbox,sScript,sTable,idSignalEvent,sSignalList,sSignalListFCU,sSignalListFCR,sTrialTypeListUpH);
@@ -140,3 +144,7 @@ nSignalUpH = 57;
 % same type. The following will reorder all events so that they alternate
 % between event type
 
+alternateTempEvents(dbox,nSignalUpH,1)
+alternateTempEvents(dbox,nSignalUpH,2)
+alternateTempEvents(dbox,nSignalSideH,3)
+alternateTempEvents(dbox,nSignalSideH,4)
