@@ -51,7 +51,8 @@ idTrialTypeUpH   = [7,8];
 
 %%  Grab event times using detectReachMovements.m (do not include directions)
 
-
+sSignalSideV = "ECU_X";
+nSignalSideV = 57;
 % sideways vertical trials
 [sideVEventsS1,sideVEventsF1,sideVEventsS4,sideVEventsF4,sideVEventsS6,...
     sideVEventsF6,sideVEventsS7,sideVEventsF7,sideVEventsS8,sideVEventsF8,...
@@ -67,7 +68,8 @@ nSignalSideH = 48;
     sideHEventsS9,sideHEventsF9] = detectReachMovements(dbox,idSignalEvent,sScript,...
     sTable,sTrialTypeListSideH,idTrialTypeSideH,sSignalSideH,nSignalSideH);
 
-
+sSignalUpV = "ECU_X";
+nSignalUpV = 57;
 % upright vertical trials
 [upVEventsS1,upVEventsF1,upVEventsS4,upVEventsF4,upVEventsS6,upVEventsF6,...
     upVEventsS7,upVEventsF7,upVEventsS8,upVEventsF8,upVEventsS9,...
@@ -119,20 +121,55 @@ nSignalUpH = 57;
 
 % sideways vertical trials
 % assignTempEvents(dbox,nSignalSideV,sideVEventsF1,5);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsF4,29);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsS4,28);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsF6,45);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsS6,44);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsF7,53);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsS7,52);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsF8,61);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsS8,60);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsF9,69);
+% assignTempEvents(dbox,nSignalSideV,sideVEventsS9,68);
 
 
 % Sideways horizontal
 % assignTempEvents(dbox,nSignalSideH,sideHEventsF1,3);
 % assignTempEvents(dbox,nSignalSideH,sideHEventsS1,4);
-
+% assignTempEvents(dbox,nSignalSideH,sideHEventsF4,25);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsS4,24);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsF6,41);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsS6,40);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsF7,49);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsS7,48);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsF8,57);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsS8,56);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsF9,65);
+% assignTempEvents(dbox,nSignalSideH,sideHEventsS9,64);
 
 % upright vertical trials
-
+% assignTempEvents(dbox,nSignalUpV,upVEventsF4,27);
+% assignTempEvents(dbox,nSignalUpV,upVEventsS4,26);
+% assignTempEvents(dbox,nSignalUpV,upVEventsF6,43);
+% assignTempEvents(dbox,nSignalUpV,upVEventsS6,42);
+% assignTempEvents(dbox,nSignalUpV,upVEventsF7,51);
+% assignTempEvents(dbox,nSignalUpV,upVEventsS7,50);
+% assignTempEvents(dbox,nSignalUpV,upVEventsF8,59);
+% assignTempEvents(dbox,nSignalUpV,upVEventsS8,58);
+% assignTempEvents(dbox,nSignalUpV,upVEventsF9,67);
+% assignTempEvents(dbox,nSignalUpV,upVEventsS9,66);
 
 % upright horizontal
 % assignTempEvents(dbox,nSignalUpH,upHEventsF1,1);
 % assignTempEvents(dbox,nSignalUpH,upHEventsS1,2);
-
+% assignTempEvents(dbox,nSignalUpH,upHEventsS4,22);
+% assignTempEvents(dbox,nSignalUpH,upHEventsF6,39);
+% assignTempEvents(dbox,nSignalUpH,upHEventsS6,38);
+% assignTempEvents(dbox,nSignalUpH,upHEventsF7,47);
+% assignTempEvents(dbox,nSignalUpH,upHEventsS7,46);
+% assignTempEvents(dbox,nSignalUpH,upHEventsF8,55);
+% assignTempEvents(dbox,nSignalUpH,upHEventsS8,54);
+% assignTempEvents(dbox,nSignalUpH,upHEventsF9,63);
 %%
 
 % check the temporary events to make sure none got skipped. Add any
@@ -144,7 +181,37 @@ nSignalUpH = 57;
 % same type. The following will reorder all events so that they alternate
 % between event type
 
-alternateTempEvents(dbox,nSignalUpH,1)
-alternateTempEvents(dbox,nSignalUpH,2)
-alternateTempEvents(dbox,nSignalSideH,3)
-alternateTempEvents(dbox,nSignalSideH,4)
+% nSignalUpH = 57;
+% nSignalSideH = 48;
+% nSignalUpV = 57;
+% nSignalSideV = 57;
+
+% sideways vertical trials
+iSV = [5,28,29,44,45,52,53,60,61,68,69];
+for i = iSV
+    alternateTempEvents(dbox,nSignalSideV,i)
+end
+
+% sideways horizontal trials
+iSH = [3,4,24,25,40,41,48,49,56,57,64,65];
+for i = iSH
+    alternateTempEvents(dbox,nSignalSideH,i)
+end
+
+% upright vertical trials
+iUV = [26,27,42,43,50,51,58,59,66,67];
+for i = iUV
+    alternateTempEvents(dbox,nSignalUpV,i)
+end
+
+% Upright horizontal trials
+iUH = [1,2,22,38,39,46,47,54,55,63];
+for i = iUH
+    alternateTempEvents(dbox,nSignalUpH,i)
+end
+
+% alternateTempEvents(dbox,nSignalUpH,1)
+% alternateTempEvents(dbox,nSignalUpH,2)
+% alternateTempEvents(dbox,nSignalSideH,3)
+% alternateTempEvents(dbox,nSignalSideH,4)
+
