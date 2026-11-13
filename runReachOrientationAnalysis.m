@@ -101,18 +101,6 @@ nSignalUpH = 57;
 % stdsSlow = [stdS1,stdS4,stdS6,stdS7,stdS8,stdS9];
 % 
 % SlowValuesUpH = table(averagesSlow',stdsSlow')
-% 
-% [meanF1,stdF1] = getEventDuration(upHEventsF1);
-% [meanF4,stdF4] = getEventDuration(upHEventsF4);
-% [meanF6,stdF6] = getEventDuration(upHEventsF6);
-% [meanF7,stdF7] = getEventDuration(upHEventsF7);
-% [meanF8,stdF8] = getEventDuration(upHEventsF8);
-% [meanF9,stdF9] = getEventDuration(upHEventsF9);
-% 
-% averagesFast = [meanF1,meanF4,meanF6,meanF7,meanF8,meanF9];
-% stdsFast = [stdF1,stdF4,stdF6,stdF7,stdF8,stdF9];
-% 
-% FastValuesUpV = table(averagesFast',stdsFast')
 
 %%
 % commented out assignments have already been done and adjusted. Rerunning
@@ -181,10 +169,10 @@ nSignalUpH = 57;
 % same type. The following will reorder all events so that they alternate
 % between event type
 
-% nSignalUpH = 57;
-% nSignalSideH = 48;
-% nSignalUpV = 57;
-% nSignalSideV = 57;
+nSignalUpH = 57;
+nSignalSideH = 48;
+nSignalUpV = 57;
+nSignalSideV = 57;
 
 % sideways vertical trials
 iSV = [5,28,29,44,45,52,53,60,61,68,69];
@@ -210,8 +198,13 @@ for i = iUH
     alternateTempEvents(dbox,nSignalUpH,i)
 end
 
-% alternateTempEvents(dbox,nSignalUpH,1)
-% alternateTempEvents(dbox,nSignalUpH,2)
-% alternateTempEvents(dbox,nSignalSideH,3)
-% alternateTempEvents(dbox,nSignalSideH,4)
 
+%%
+
+% at this point you need to make any necessary adjustments in monitor
+% session
+
+%%
+% run classifyReachDirection to get events specific to reach direction
+
+classifyReachDirection([])
