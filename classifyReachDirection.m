@@ -14,16 +14,17 @@ idTrials = idTrialsIn;
 nRate = dbox.getMeta('metaSignal',{'sTable',sTable,...
     'sSignal',sSignalList{1}},'nRate');
 
+% the following handles upright horizontal trials
 if isequal(idTrials,[1,2,22,38,39,46,47,54,55,63])
     for i = 1:numel(idTrials)
-        signal = dbox.getSignal(46,nums(i));
+        signal = dbox.getSignal(46,idTrials(i));
 
         filSignal = butterfilt(signal,nRate,1);
 
-        tOn = dbox.getEvent(nums(i),57,'on',[]);
+        tOn = dbox.getEvent(idTrials(i),57,'on',[]);
         yOn = filSignal(round(tOn*nRate,0));
 
-        tOff = dbox.getEvent(nums(i),57,'peak',[]);
+        tOff = dbox.getEvent(idTrials(i),57,'peak',[]);
         yOff = filSignal(round(tOff*nRate,0));
 
         len = min(numel(yOn),numel(yOff));
@@ -35,7 +36,15 @@ if isequal(idTrials,[1,2,22,38,39,46,47,54,55,63])
 
         aveDiff = mean(diff);
 
-        if aveDiff < 1
+        % dbox.modEvent({'idTrial',idTrials(i),'idSignal',57},'bEvent',0);
+        % 
+        % if aveDiff < 0
+        %     dbox.setEvent(tOn,idTrials(i),57,'left');
+        %     dbox.setEvent(tOff,idTrials(i),57,'right');
+        % else
+        %     dbox.setEvent(tOff,idTrials(i),57,'left');
+        %     dbox.setEvent(tOn,idTrials(i),57,'right');
+        % end
 
         x = 0:numel(signal)-1;
         t = x/nRate;
@@ -50,7 +59,51 @@ if isequal(idTrials,[1,2,22,38,39,46,47,54,55,63])
     end
 end
 
+%the following handles upright vertical trials
+% note: change these to be the upright vertical trials
+if isequal(idTrials,[1,2,22,38,39,46,47,54,55,63])
+    for i = 1:numel(idTrials)
+        signal = dbox.getSignal(46,idTrials(i));
 
+        filSignal = butterfilt(signal,nRate,1);
+
+        tOn = dbox.getEvent(idTrials(i),57,'on',[]);
+        yOn = filSignal(round(tOn*nRate,0));
+
+        tOff = dbox.getEvent(idTrials(i),57,'peak',[]);
+        yOff = filSignal(round(tOff*nRate,0));
+
+        len = min(numel(yOn),numel(yOff));
+
+        diff = zeros(len,1);
+        for j = 1:len-1
+            diff(j) = tOn(j)-tOff(j);
+        end
+
+        aveDiff = mean(diff);
+
+        % dbox.modEvent({'idTrial',idTrials(i),'idSignal',57},'bEvent',0);
+        % 
+        % if aveDiff < 0
+        %     dbox.setEvent(tOn,idTrials(i),57,'up');
+        %     dbox.setEvent(tOff,idTrials(i),57,'down');
+        % else
+        %     dbox.setEvent(tOff,idTrials(i),57,'up');
+        %     dbox.setEvent(tOn,idTrials(i),57,'down');
+        % end
+
+        x = 0:numel(signal)-1;
+        t = x/nRate;
+
+        figure
+        plot(t,filSignal)
+        hold on
+        plot(tOn,yOn,'ko')
+        plot(tOff,yOff,'ro')
+        hold off
+        title(['FCU_Z filtered Trial ', num2str(nums(i))])
+    end
+end
 
 
 end
